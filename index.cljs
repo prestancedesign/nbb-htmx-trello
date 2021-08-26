@@ -6,6 +6,7 @@
 
 (-> (express)
     (.set "view engine" "pug")
+    (.use (.static express "assets"))
     (.get "/" (fn [_req res]
                 (.render res "index" (clj->js lists))))
     (.listen port #(println "Listening on port:" port)))
