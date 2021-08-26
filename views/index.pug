@@ -2,11 +2,11 @@ doctype html
 include _mixins
 html(lang="en")
   head
-    title Trello in htmx
+    title Trello in htmx and Nbb
     link(href="/styles.css", rel="stylesheet")
   body
     .app
-      .header htmx Trello Clone
+      .header Nbb htmx Trello Clone
       form(hx-post="/cards/move", hx-trigger="cardmoved", hx-target="#board")
         input#fromList(type="hidden", name="from")
         input#toList(type="hidden", name="to")
