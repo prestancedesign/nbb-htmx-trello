@@ -1,11 +1,11 @@
 (ns data.lists)
 
 (def lists
-  {:lists [{:id 1,
-            :name "To Do",
-            :cards [{:id 1, :label "First Card", :list 1}
-                    {:id 2, :label "Second Card", :list 1}]}
-           {:id 2,
-            :name "Doing",
-            :cards [{:id 3, :label "First Card", :list 2}
-                    {:id 4, :label "Second Card", :list 2}]}]})
+  (atom {:lists [{:id 1,
+                  :name "To Do",
+                  :cards [{:id 1, :label "First Card", :list 1}
+                          {:id 2, :label "Second Card", :list 1}]}
+                 {:id 2,
+                  :name "Doing",
+                  :cards [{:id 3, :label "First Card", :list 2}
+                          {:id 4, :label "Second Card", :list 2}]}]}))
