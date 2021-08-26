@@ -1,0 +1,16 @@
+include _mixins
+#add-list.add-list-editor
+  form(hx-post="/lists", hx-target="#board")
+    .list-title-edit
+      input.list-title-textarea(type="text", maxlength="30", name="name", placeholder='Enter list title...' style='width: 245px; height: 17px;', autofocus="true")
+    .edit-buttons
+      button.edit-button(type="submit", tabindex='0' style='background-color: rgb(90, 172, 68);') Add list
+      button.edit-button-cancel(
+        type="button",
+        tabindex='0'
+        hx-get="/lists/cancel"
+        hx-target="#add-list",
+        hx-swap="outerHTML"
+        )
+        +icon-close()
+
