@@ -55,4 +55,10 @@
                     card (first (filter #(= id (:id %)) (:cards list)))
                     template (.compileFile pug "views/_card.pug")
                     markup (template (clj->js {:id id :list list :card card}))]
-                (.send res markup))))))
+                (.send res markup))))
+      (.delete "/:list_id/:id"
+               (fn [req res]
+                 (let [list-id (int (.. req -params -list_id))
+                       id (int (.. req -params -id))
+                       _ (swap! lists update-in [:lists list-id :cards] #(remove (fn [i] (= (:id i) id)) %))]
+                   (.send res ""))))))

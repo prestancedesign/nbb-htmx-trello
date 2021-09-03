@@ -8,4 +8,5 @@
                             2 {:id 2
                                :name "Doing"
                                :cards [{:id 3 :label "First Card" :list 2}
-                                       {:id 4 :label "Second Card" :list 2}]})}))
+                                       {:id 4 :label "Second Card" :list 2}
+                                       {:id 5 :label "Third Card" :list 2}]})}))
