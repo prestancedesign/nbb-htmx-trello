@@ -30,7 +30,7 @@
             (fn [req res]
               (let [list-id (int (.. req -params -list_id))
                     id (int (.. req -params -id))
-                    list (get-in @lists [:lists list-id])
+                    list (get @lists (dec list-id))
                     card (first (filter (comp #{id} :id) (:cards list)))
                     template (.compileFile pug "views/_edit-card.pug")
                     markup (template (clj->js {:id id :list list :card card}))]
@@ -40,9 +40,9 @@
               (let [label (.. req -body -label)
                     list-id (int (.. req -params -list_id))
                     id (int (.. req -params -id))
-                    idx (first (keep-indexed #(when (= (:id %2) id) %1) (get-in @lists [:lists list-id :cards])))
-                    _ (swap! lists update-in [:lists list-id] assoc-in [:cards idx :label] label)
-                    list (get-in @lists [:lists list-id])
+                    _ (swap! lists update-in [(dec list-id) :cards]
+                             (fn [l] (mapv #(if (= (:id %) id) (assoc % :label label) %) l)))
+                    list (get @lists (dec list-id))
                     card (first (filter #(= id (:id %)) (:cards list)))
                     template (.compileFile pug "views/_card.pug")
                     markup (template (clj->js {:list list :card card}))]
@@ -51,8 +51,8 @@
             (fn [req res]
               (let [list-id (int (.. req -params -list_id))
                     id (int (.. req -params -id))
-                    list (get-in @lists [:lists list-id])
-                    card (first (filter #(= id (:id %)) (:cards list)))
+                    list (get @lists (dec list-id))
+                    card (first (filter (comp #{id} :id) (:cards list)))
                     template (.compileFile pug "views/_card.pug")
                     markup (template (clj->js {:id id :list list :card card}))]
                 (.send res markup))))
@@ -60,5 +60,6 @@
                (fn [req res]
                  (let [list-id (int (.. req -params -list_id))
                        id (int (.. req -params -id))
-                       _ (swap! lists update-in [:lists list-id :cards] #(remove (fn [i] (= (:id i) id)) %))]
+                       _ (swap! lists update-in [(dec list-id) :cards]
+                                #(remove (fn [i] (= (:id i) id)) %))]
                    (.send res ""))))))

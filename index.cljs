@@ -11,7 +11,7 @@
       (.use (.json body-parser))
       (.use (.urlencoded body-parser #js {:extended true}))
       (.get "/" (fn [_req res]
-                  (.render res "index" (clj->js @lists))))
+                  (.render res "index" (clj->js {:lists @lists}))))
       (.use "/lists" lists-router)
       (.use "/cards" cards-router)
       (.listen port #(println "Listening on port:" port))))
