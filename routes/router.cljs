@@ -1,6 +1,7 @@
 (ns routes.router
   (:require ["express$Router" :as router]
             ["pug" :as pug]
+            [applied-science.js-interop :as j]
             [data.lists :refer [lists]]))
 
 (def lists-router
@@ -24,37 +25,36 @@
                     markup (template)]
                 (.send res markup))))))
 
+(defn find-by-id [id coll]
+  (some #(when (= (:id %) (int id)) %) coll))
+
+(defn render [template-path id list-id]
+  (let [template (.compileFile pug (str "views/" template-path ".pug"))
+        list (find-by-id list-id @lists)
+        card (find-by-id id (:cards list))]
+    (template (clj->js {:list list :card card}))))
+
 (def cards-router
   (-> (router)
       (.get "/edit/:list_id/:id"
             (fn [req res]
-              (let [list-id (int (.. req -params -list_id))
-                    id (int (.. req -params -id))
-                    list (get @lists (dec list-id))
-                    card (first (filter (comp #{id} :id) (:cards list)))
-                    template (.compileFile pug "views/_edit-card.pug")
-                    markup (template (clj->js {:id id :list list :card card}))]
+              (j/let [^:js {:keys [id list_id]} (j/get req :params)
+                      markup (render "_edit-card" id list_id)]
                 (.send res markup))))
       (.put "/:list_id/:id"
             (fn [req res]
               (let [label (.. req -body -label)
+                    ;TODO: Find a solution for coerce id + list-id
                     list-id (int (.. req -params -list_id))
                     id (int (.. req -params -id))
                     _ (swap! lists update-in [(dec list-id) :cards]
                              (fn [l] (mapv #(if (= (:id %) id) (assoc % :label label) %) l)))
-                    list (get @lists (dec list-id))
-                    card (first (filter #(= id (:id %)) (:cards list)))
-                    template (.compileFile pug "views/_card.pug")
-                    markup (template (clj->js {:list list :card card}))]
+                    markup (render "_card" id list-id)]
                 (.send res markup))))
       (.get "/cancel-edit/:list_id/:id"
             (fn [req res]
-              (let [list-id (int (.. req -params -list_id))
-                    id (int (.. req -params -id))
-                    list (get @lists (dec list-id))
-                    card (first (filter (comp #{id} :id) (:cards list)))
-                    template (.compileFile pug "views/_card.pug")
-                    markup (template (clj->js {:id id :list list :card card}))]
+              (j/let [^:js {:keys [id list_id]} (j/get req :params)
+                      markup (render "_card" id list_id)]
                 (.send res markup))))
       (.delete "/:list_id/:id"
                (fn [req res]
