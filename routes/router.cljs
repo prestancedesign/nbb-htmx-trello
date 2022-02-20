@@ -26,7 +26,7 @@
                 (.send res markup))))))
 
 (defn find-by-id [id coll]
-  (some #(when (= (:id %) (int id)) %) coll))
+  (some #(when (= (:id %) id) %) coll))
 
 (defn render [template-path id list-id]
   (let [template (.compileFile pug (str "views/" template-path ".pug"))
@@ -57,8 +57,8 @@
             (fn [req res]
               (let [label (.. req -body -label)
                     ;TODO: Find a solution for coerce id + list-id
-                    list-id (int (.. req -params -list_id))
-                    id (int (.. req -params -id))
+                    list-id (.. req -params -list_id)
+                    id (.. req -params -id)
                     _ (swap! lists update-in [(dec list-id) :cards]
                              (fn [l] (mapv #(if (= (:id %) id) (assoc % :label label) %) l)))
                     markup (render "_card" id list-id)]
@@ -70,8 +70,8 @@
                 (.send res markup))))
       (.delete "/:list_id/:id"
                (fn [req res]
-                 (let [list-id (int (.. req -params -list_id))
-                       id (int (.. req -params -id))
+                 (let [list-id (.. req -params -list_id)
+                       id (.. req -params -id)
                        _ (swap! lists update-in [(dec list-id) :cards]
                                 #(remove (fn [i] (= (:id i) id)) %))]
                    (.send res ""))))))
