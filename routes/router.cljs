@@ -40,13 +40,13 @@
              (fn [req res]
                (j/let [^:js {:keys [list_id]} (j/get req :params)
                        label (j/get-in req [:body (str "label-" list_id)])
+                       id (str (random-uuid))
                        list (find-by-id list_id @lists)
                        card {:label label
-                             :id (str (random-uuid))
+                             :id id
                              :list (:id list)}
                        _ (swap! lists update-in [(dec list_id) :cards] conj card)
-                       template (.compileFile pug "views/_new-card.pug")
-                       markup (template (clj->js {:card card :list list}))]
+                       markup (render "_new-card" id list_id)]
                  (.send res markup))))
       (.get "/edit/:list_id/:id"
             (fn [req res]
