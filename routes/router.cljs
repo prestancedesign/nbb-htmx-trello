@@ -8,22 +8,19 @@
   (-> (router)
       (.get "/add"
             (fn [_req res]
-              (let [template (.compileFile pug "views/_add-list.pug")
-                    markup (template)]
-                (.send res markup))))
+              (let [template (.compileFile pug "views/_add-list.pug")]
+                (.send res (template)))))
       (.post "/"
              (fn [req res]
                (let [name (.. req -body -name)
                      id (inc (count (:lists @lists)))
                      new-list (swap! lists update :lists conj {id {:id id :name name :cards []}})
-                     template (.compileFile pug "views/_board.pug")
-                     markup (template (clj->js new-list))]
-                 (.send res markup))))
+                     template (.compileFile pug "views/_board.pug")]
+                 (.send res (template (clj->js new-list))))))
       (.get "/cancel"
             (fn [_req res]
-              (let [template (.compileFile pug "views/_new-list.pug")
-                    markup (template)]
-                (.send res markup))))))
+              (let [template (.compileFile pug "views/_new-list.pug")]
+                (.send res (template)))))))
 
 (defn find-by-id [id coll]
   (some #(when (= (:id %) id) %) coll))
@@ -45,14 +42,12 @@
                        card {:label label
                              :id id
                              :list (:id list)}
-                       _ (swap! lists update-in [(dec list_id) :cards] conj card)
-                       markup (render "_new-card" id list_id)]
-                 (.send res markup))))
+                       _ (swap! lists update-in [(dec list_id) :cards] conj card)]
+                 (.send res (render "_new-card" id list_id)))))
       (.get "/edit/:list_id/:id"
             (fn [req res]
-              (j/let [^:js {:keys [id list_id]} (j/get req :params)
-                      markup (render "_edit-card" id list_id)]
-                (.send res markup))))
+              (j/let [^:js {:keys [id list_id]} (j/get req :params)]
+                (.send res (render "_edit-card" id list_id)))))
       (.put "/:list_id/:id"
             (fn [req res]
               (let [label (.. req -body -label)
@@ -60,14 +55,12 @@
                     list-id (.. req -params -list_id)
                     id (.. req -params -id)
                     _ (swap! lists update-in [(dec list-id) :cards]
-                             (fn [l] (mapv #(if (= (:id %) id) (assoc % :label label) %) l)))
-                    markup (render "_card" id list-id)]
-                (.send res markup))))
+                             (fn [l] (mapv #(if (= (:id %) id) (assoc % :label label) %) l)))]
+                (.send res (render "_card" id list-id)))))
       (.get "/cancel-edit/:list_id/:id"
             (fn [req res]
-              (j/let [^:js {:keys [id list_id]} (j/get req :params)
-                      markup (render "_card" id list_id)]
-                (.send res markup))))
+              (j/let [^:js {:keys [id list_id]} (j/get req :params)]
+                (.send res (render "_card" id list_id)))))
       (.delete "/:list_id/:id"
                (fn [req res]
                  (let [list-id (.. req -params -list_id)
