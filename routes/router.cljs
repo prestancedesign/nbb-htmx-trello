@@ -13,10 +13,11 @@
       (.post "/"
              (fn [req res]
                (let [name (.. req -body -name)
-                     id (inc (count (:lists @lists)))
-                     new-list (swap! lists update :lists conj {id {:id id :name name :cards []}})
+                     id (str (random-uuid))
+                     new-list {:id id :name name :cards []}
+                     _ (swap! lists conj new-list)
                      template (.compileFile pug "views/_board.pug")]
-                 (.send res (template (clj->js new-list))))))
+                 (.send res (template (clj->js {:lists @lists}))))))
       (.get "/cancel"
             (fn [_req res]
               (let [template (.compileFile pug "views/_new-list.pug")]
