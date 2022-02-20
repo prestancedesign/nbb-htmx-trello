@@ -36,6 +36,18 @@
 
 (def cards-router
   (-> (router)
+      (.post "/new/:list_id"
+             (fn [req res]
+               (j/let [^:js {:keys [list_id]} (j/get req :params)
+                       label (j/get-in req [:body (str "label-" list_id)])
+                       list (find-by-id list_id @lists)
+                       card {:label label
+                             :id (str (random-uuid))
+                             :list (:id list)}
+                       _ (swap! lists update-in [(dec list_id) :cards] conj card)
+                       template (.compileFile pug "views/_new-card.pug")
+                       markup (template (clj->js {:card card :list list}))]
+                 (.send res markup))))
       (.get "/edit/:list_id/:id"
             (fn [req res]
               (j/let [^:js {:keys [id list_id]} (j/get req :params)
