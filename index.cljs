@@ -2,7 +2,8 @@
   (:require ["express$default" :as express]
             ["body-parser$default" :as body-parser]
             [data.lists :refer [lists]]
-            [routes.router :refer [lists-router cards-router]]))
+            [routes.lists :refer [lists-router]]
+            [routes.cards :refer [cards-router]]))
 
 (let [port 3000]
   (-> (express)
