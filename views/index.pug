@@ -6,7 +6,7 @@ html(lang="en")
     link(href="/styles.css", rel="stylesheet")
   body
     .app
-      .header Nbb htmx Trello Clone
+      .header nbb Trello clone
       form(hx-post="/cards/move", hx-trigger="cardmoved", hx-target="#board")
         input#fromList(type="hidden", name="from")
         input#toList(type="hidden", name="to")

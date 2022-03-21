@@ -1,7 +1,7 @@
 (ns index
   (:require ["express$default" :as express]
             ["body-parser$default" :as body-parser]
-            [data.lists :refer [lists]]
+            [data.db :refer [db]]
             [routes.lists :refer [lists-router]]
             [routes.cards :refer [cards-router]]))
 
@@ -12,7 +12,7 @@
       (.use (.json body-parser))
       (.use (.urlencoded body-parser #js {:extended true}))
       (.get "/" (fn [_req res]
-                  (.render res "index" (clj->js {:lists @lists}))))
+                  (.render res "index" (clj->js @db))))
       (.use "/lists" lists-router)
       (.use "/cards" cards-router)
       (.listen port #(println "Listening on port:" port))))
