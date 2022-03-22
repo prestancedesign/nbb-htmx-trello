@@ -8,9 +8,9 @@
 (let [port 3000]
   (-> (express)
       (.set "view engine" "pug")
-      (.use (.static express "assets"))
-      (.use (.json body-parser))
-      (.use (.urlencoded body-parser #js {:extended true}))
+      (.use (express/static "assets"))
+      (.use (body-parser/json))
+      (.use (body-parser/urlencoded #js {:extended true}))
       (.get "/" (fn [_req res]
                   (.render res "index" (clj->js @db))))
       (.use "/lists" lists-router)
