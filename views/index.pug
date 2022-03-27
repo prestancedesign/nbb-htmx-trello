@@ -25,6 +25,8 @@ html(lang="en")
               new Sortable(sortable, {
                   animation: 150,
                   group: 'shared',
+                  filter: '.filtered',
+                  preventOnFilter: false,
               });
             }
         })
